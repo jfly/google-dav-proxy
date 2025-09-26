@@ -1,0 +1,39 @@
+[project]
+name = "google-dav-proxy"
+version = "0.1.0"
+description = "A {Cal,Card}DAV proxy for Google."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "aiohttp-oauthlib",
+    "typer",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5",
+    "pytest-cov>=6.0.0",
+]
+
+[project.scripts]
+google-dav-proxy = "google_dav_proxy.cli:main"
+
+[tool.ruff.lint]
+extend-select = ["I"]
+
+[tool.pytest.ini_options]
+# Always print a full diff on assertion failures.
+verbosity_assertions = 2
+addopts = [
+    # https://docs.pytest.org/en/stable/explanation/goodpractices.html#which-import-mode
+    "--import-mode=importlib",
+    "--cov=src",
+]
+# Treat warnings as errors.
+filterwarnings = [
+    "error",
+]
+
+[tool.coverage.report]
+fail_under = 100
+show_missing = true
