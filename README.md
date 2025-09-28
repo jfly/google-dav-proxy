@@ -10,3 +10,9 @@ I later learned that the author of `pimsync` actually proposed this exact idea
 in [a blog
 post](https://whynothugo.nl/journal/2025/03/04/design-for-google-caldav-support-in-pimsync/).
 As far as I can tell, no one else has built this yet.
+
+## Usage
+
+```console
+google-dav-proxy --creds-file secrets/credentials.json --token-file secrets/token.json
+```

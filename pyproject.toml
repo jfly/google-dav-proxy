@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "aiohttp-oauthlib",
+    "pydantic",
     "typer",
 ]
 
@@ -16,7 +17,7 @@ dev = [
 ]
 
 [project.scripts]
-google-dav-proxy = "google_dav_proxy.cli:main"
+google-dav-proxy = "google_dav_proxy.cli:app"
 
 [tool.ruff.lint]
 extend-select = ["I"]
