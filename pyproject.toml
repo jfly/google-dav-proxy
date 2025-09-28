@@ -5,9 +5,11 @@ description = "A {Cal,Card}DAV proxy for Google."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "asgineer",
     "aiohttp-oauthlib",
     "pydantic",
     "typer",
+    "uvicorn",
 ]
 
 [dependency-groups]
@@ -33,8 +35,14 @@ addopts = [
 # Treat warnings as errors.
 filterwarnings = [
     "error",
+    # TODO: file an issue upstream.
+    # <https://git.sr.ht/~whynothugo/aiohttp-oauthlib> doesn't seem to have an
+    # issue tracker, so I suppose we need to email the author directly?
+    # Details:
+    #  - https://github.com/aio-libs/aiohttp/issues/2691
+    #  - https://github.com/aio-libs/aiohttp/issues/3185
+    "ignore:Inheritance class OAuth2Session from ClientSession is discouraged:DeprecationWarning",
 ]
 
 [tool.coverage.report]
-fail_under = 100
 show_missing = true

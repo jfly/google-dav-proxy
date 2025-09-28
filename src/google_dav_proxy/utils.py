@@ -3,6 +3,7 @@ import os
 import tempfile
 
 
+# Copied from <https://github.com/pimutils/vdirsyncer/blob/v0.20.0/vdirsyncer/utils.py#L229>.
 @contextlib.contextmanager
 def atomic_write(dest, mode="wb", overwrite=False):
     if "w" not in mode:

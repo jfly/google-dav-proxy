@@ -21,6 +21,7 @@ async def proxy(creds_file: Path, token_file: Path):
 
     cal_url = "https://apidata.googleusercontent.com/caldav/v2/"
 
+    await session.request("GET", cal_url)
     print(session, cal_url)  # TODO: actually proxy!
 
 
@@ -39,4 +40,5 @@ def main(
         ),
     ],
 ):
+    logging.basicConfig(level=logging.DEBUG)
     asyncio.run(proxy(creds_file, token_file))

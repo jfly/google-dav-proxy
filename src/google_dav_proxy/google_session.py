@@ -1,19 +1,16 @@
-# Based on:
-# https://github.com/pimutils/vdirsyncer/blob/v0.20.0/vdirsyncer/storage/google.py
 import json
 import logging
 import webbrowser
-import wsgiref.simple_server
 from importlib.metadata import version
 from pathlib import Path
-from threading import Thread
 from typing import cast
 
 import click
 from aiohttp_oauthlib import OAuth2Session
 from pydantic import BaseModel
 
-from .redirect_app import RedirectWSGIApp, WSGIRequestHandler
+from .hello_app import HelloASGIApp
+from .local_server import LocalServer
 from .utils import atomic_write
 
 logger = logging.getLogger(__name__)
@@ -76,6 +73,9 @@ class GoogleSession:
         )
 
     async def _init_token(self):
+        """
+        Based on <https://github.com/pimutils/vdirsyncer/blob/v0.20.0/vdirsyncer/storage/google.py>
+        """
         try:
             with self._token_file.open() as f:
                 self._token = json.load(f)
@@ -83,20 +83,14 @@ class GoogleSession:
             pass
 
         if not self._token:
-            # Some times a task stops at this `async`, and another continues the flow.
-            # At this point, the user has already completed the flow, but is prompted
-            # for a second one.
-            wsgi_app = RedirectWSGIApp("Successfully obtained token.")
-            wsgiref.simple_server.WSGIServer.allow_reuse_address = False
-            host = "127.0.0.1"
-            local_server = wsgiref.simple_server.make_server(
-                host, 0, wsgi_app, handler_class=WSGIRequestHandler
-            )
-            thread = Thread(target=local_server.handle_request, daemon=True)
-            thread.start()
-            redirect_uri = f"http://{host}:{local_server.server_port}"
-            async with self._session(redirect_uri=redirect_uri) as session:
+            async with (
+                LocalServer.serve(
+                    HelloASGIApp("Successfully obtained token.")
+                ) as running_server,
+                self._session(redirect_uri=running_server.base_url) as session,
+            ):
                 session = cast(OAuth2Session, session)
+
                 authorization_url, state = session.authorization_url(
                     self._creds.auth_uri,
                     # `access_type` and `approval_prompt` are Google specific
@@ -111,15 +105,13 @@ class GoogleSession:
                     logger.warning(str(e))
 
                 click.echo("Follow the instructions on the page.")
-                thread.join()
+
+                next_request_url = await running_server.next_request_url()
                 logger.debug("server handled request!")
 
                 # Note: using https here because oauthlib is very picky that
                 # OAuth 2.0 should only occur over https.
-                assert wsgi_app.last_request_uri is not None
-                authorization_response = wsgi_app.last_request_uri.replace(
-                    "http", "https", 1
-                )
+                authorization_response = next_request_url.replace("http", "https", 1)
                 logger.debug(f"authorization_response: {authorization_response}")
                 self._token = await session.fetch_token(
                     self._creds.token_uri,
@@ -128,7 +120,6 @@ class GoogleSession:
                     client_secret=self._creds.client_secret,
                 )
                 logger.debug(f"token: {self._token}")
-                local_server.server_close()
 
             await self._save_token(self._token)
 

@@ -6,6 +6,6 @@ runner = CliRunner()
 
 
 def test_app():
-    result = runner.invoke(app)
+    result = runner.invoke(app, ["--help"])
     assert result.exit_code == 0
-    assert result.output == "hello, world\n"
+    assert "Usage: " in result.output
