@@ -16,3 +16,9 @@ As far as I can tell, no one else has built this yet.
 ```console
 google-dav-proxy --creds-file secrets/credentials.json --token-file secrets/token.json
 ```
+
+## Notes
+
+- This does not yet support `CardDAV`, but that should be a minor tweak.
+- For `CalDAV` to work, it requires a minor patch to a `pimsync` dependency:
+  <https://todo.sr.ht/~whynothugo/pimsync/201>
