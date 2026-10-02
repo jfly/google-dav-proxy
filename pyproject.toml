@@ -39,3 +39,7 @@ filterwarnings = [
 
 [tool.coverage.report]
 show_missing = true
+
+[build-system]
+requires = ["uv_build >= 0.11.7"]
+build-backend = "uv_build"

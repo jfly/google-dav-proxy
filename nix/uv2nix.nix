@@ -81,9 +81,7 @@ in
 
         python = cfg.python;
         workspace = inputs.uv2nix.lib.workspace.loadWorkspace {
-          workspaceRoot =
-            # Workaround for https://github.com/pyproject-nix/uv2nix/issues/179
-            /. + (builtins.unsafeDiscardStringContext cfg.workspaceRoot);
+          workspaceRoot = cfg.workspaceRoot;
         };
 
         pyprojectToml = lib.importTOML (cfg.workspaceRoot + "/pyproject.toml");

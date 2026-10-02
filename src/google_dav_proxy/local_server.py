@@ -2,7 +2,8 @@ import asyncio
 import contextlib
 import logging
 import socket
-from typing import Any, Awaitable, Callable
+from collections.abc import Awaitable, Callable
+from typing import Any
 
 import asgineer
 import uvicorn

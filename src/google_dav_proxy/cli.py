@@ -103,14 +103,16 @@ def main(
         typer.Argument(help="Email address of an email configured with `oama`"),
     ],
     bind: Annotated[
-        ParsedBindForUvicorn,
+        ParsedBindForUvicorn | None,
         typer.Option(
             help="Bind to this address/socket. Examples: '127.0.0.1:8080' or 'unix:/path/to/socket.sock'",
             parser=parse_bind_for_uvicorn,
         ),
-    ] = {"host": "127.0.0.1", "port": 8080},
+    ] = None,
     verbose: Annotated[bool, typer.Option("--verbose", "-v")] = False,
 ):
+    if bind is None:
+        bind = {"host": "127.0.0.1", "port": 8080}
     log_level = logging.DEBUG if verbose else logging.INFO
     logging.basicConfig(level=log_level)
 
